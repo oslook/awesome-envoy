@@ -45,7 +45,7 @@ jobs:
       - name: Checkout source repo
         uses: actions/checkout@v2
         with:
-          repository: lyft/envoy-mobile
+          repository: envoyproxy/envoy-mobile
           submodules: true
           path: src
       # Runs a set of commands using the runners shell

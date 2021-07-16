@@ -1,5 +1,5 @@
 # https://github.com/proxy-wasm/proxy-wasm-rust-sdk
-
+name: proxy-wasm-rust-sdk
 on:
   workflow_dispatch:
 jobs:

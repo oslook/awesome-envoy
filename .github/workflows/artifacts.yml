@@ -59,6 +59,19 @@ jobs:
         with:
           name: hello_envoy_apk
           path: bazel-bin/examples/java/hello_world/hello_envoy.apk
+      - run: |
+          bazelisk build --fat_apk_cpu=x86,armeabi-v7a,arm64-v8a //examples/kotlin/hello_world:hello_envoy_kt
+          adb install -r --no-incremental bazel-bin/examples/kotlin/hello_world/hello_envoy_kt.apk
+          adb shell am start -n io.envoyproxy.envoymobile.helloenvoykotlin/.MainActivity
+        name: 'Start kotlin app'
+      - run: 'adb logcat -e "received headers with status 200" -m 1'
+        name: 'Check connectivity'   
+       # upload
+      - uses: actions/upload-artifact@v2
+        with:
+          name: hello_envoy_kt_apk
+          path: bazel-bin/examples/kotlin/hello_world/hello_envo_-kt.apk
+    
 
   main_ios_dist:
     name: main_ios_dist

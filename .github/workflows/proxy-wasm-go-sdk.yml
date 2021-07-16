@@ -48,8 +48,8 @@ jobs:
         image: [
           "envoyproxy/envoy-dev:latest", 
           "envoyproxy/envoy:v1.18.2", 
-          "istio/proxyv2:1.9.3", 
-          "istio/proxyv2:1.10.0",]
+          "istio/proxyv2:1.9.6", 
+          "istio/proxyv2:1.10.3",]
     name: E2E Test (${{ matrix.image }})
     needs: build-examples
     runs-on: ubuntu-latest

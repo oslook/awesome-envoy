@@ -1,0 +1,24 @@
+# https://github.com/solo-io/proxy-runtime/blob/master/.github/workflows/pr.yml
+# for build and run examples
+
+name: proxy-wasm-as-sdk
+on:
+  workflow_dispatch:
+jobs:
+  examples:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.1.0
+      with:
+        repository: solo-io/proxy-runtime
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - run: npm install
+    - run: npm run asbuild
+    # make sure example filter builds:
+    - run: cd examples/auth && npm install && npm run asbuild
+    - run: cd examples/addheader && npm install && npm run asbuild

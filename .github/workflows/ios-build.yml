@@ -1,12 +1,14 @@
 # https://github.com/envoyproxy/envoy-mobile/blob/main/.github/workflows/ios_build.yml
 # Required Github Action Secret `secrets.ENGFLOW_CREDENTIALS` to set in remote-mac.
-name: ios_build
+name: ios-build
 
 on:
 #   push:
 #     branches:
 #       - main
 #   pull_request:
+  # schedule:
+  #   - cron:  '0 2 * * *'
   workflow_dispatch:
 
 jobs:

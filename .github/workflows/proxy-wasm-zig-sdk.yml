@@ -1,0 +1,40 @@
+# https://github.com/mathetake/proxy-wasm-zig-sdk/blob/main/.github/workflows/build.yaml
+
+name: build
+on:
+  # schedule:
+  #   - cron:  '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  example:
+    name: "Build (Envoy: v${{ matrix.envoy-version }}, Zig: ${{ matrix.zig-version }})"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zig-version: [ "edge" ]
+        envoy-version: [ "1.18.3" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: mathetake/proxy-wasm-zig-sdk
+      - name: Install Zig
+        run: sudo snap install zig --classic --${{ matrix.zig-version }}
+
+      - name: Build
+        run: zig build
+
+      # https://github.community/t/using-strategy-matrix-values-in-the-specification-of-actions-to-be-used-in-a-workflow/16706
+      - name: Install Envoy
+        if: matrix.envoy-version == '1.18.3'
+        uses: docker://envoyproxy/envoy:v1.18.3
+        with:
+          entrypoint: cp
+          args: /usr/local/bin/envoy .
+
+      - name: Run End-to-End test
+        run: |
+          export PATH=$(pwd):$PATH
+          envoy --version
+          zig build e2e

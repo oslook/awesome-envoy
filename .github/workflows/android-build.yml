@@ -1,11 +1,13 @@
 # https://github.com/envoyproxy/envoy-mobile/blob/main/.github/workflows/android_build.yml
-name: android_build
+name: android-build
 
 on:
   # push:
   #   branches:
   #     - main
   # pull_request:
+  # schedule:
+  #   - cron:  '0 2 * * *'
   workflow_dispatch:
 
 jobs:

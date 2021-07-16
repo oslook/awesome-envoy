@@ -1,6 +1,6 @@
 # https://github.com/mathetake/proxy-wasm-zig-sdk/blob/main/.github/workflows/build.yaml
 
-name: build
+name: proxy-wasm-zig-sdk
 on:
   # schedule:
   #   - cron:  '0 2 * * *'

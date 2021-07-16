@@ -1,5 +1,6 @@
 # https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
 
+name: proxy-wasm-cpp-sdk
 on:
   workflow_dispatch:
 jobs:

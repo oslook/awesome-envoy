@@ -1,5 +1,5 @@
 # https://github.com/envoyproxy/envoy-mobile/blob/main/.github/workflows/android_build.yml
-name: android-build
+name: envoy-mobile-android-build
 
 on:
   # push:

@@ -3,7 +3,7 @@
 # Building Envoy with Remote Execution
 # Building Envoy with Docker sandbox
 
-name: Build Envoy CI (Local)
+name: Envoy(Local Ubuntu)
 
 # Controls when the workflow will run
 on:

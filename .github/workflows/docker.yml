@@ -3,7 +3,7 @@
 # !Building Envoy with Remote Execution
 # !Building Envoy with Docker sandbox
 
-name: Build Envoy CI (CI Docker Image)
+name: Envoy(Ubuntu Docker Image)
 
 # Controls when the workflow will run
 on:
@@ -46,7 +46,7 @@ jobs:
           path: |
             ~/.cache/bazel
             ~/build
-          key: ${{ runner.os }}-${{ steps.get-sha.outputs.sha }}
+          key: ${{ runner.os }}-docker-${{ steps.get-sha.outputs.sha }}
       
       # Runs a set of commands using the runners shell
       - name: Build

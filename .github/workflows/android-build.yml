@@ -1,4 +1,5 @@
 # https://github.com/envoyproxy/envoy-mobile/blob/main/.github/workflows/android_build.yml
+ # ONLY TEST FOR EMULATOR WITH X86 CPU ARCH
 name: envoy-mobile-android-build
 
 on:
@@ -44,7 +45,7 @@ jobs:
       - run: ./ci/mac_ci_setup.sh
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Install dependencies'
-      - run: bazelisk build --fat_apk_cpu=x86,armeabi-v7a,arm64-v8a //:android_dist_ci
+      - run: bazelisk build --fat_apk_cpu=x86 //:android_dist_ci
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Build envoy.aar distributable'
   javahelloworld:
@@ -87,17 +88,13 @@ jobs:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/java/hello_world:hello_envoy
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.
       - run: |
-          bazelisk build --fat_apk_cpu=x86,armeabi-v7a,arm64-v8a //examples/java/hello_world:hello_envoy
+          bazelisk build --fat_apk_cpu=x86 //examples/java/hello_world:hello_envoy
           adb install -r --no-incremental bazel-bin/examples/java/hello_world/hello_envoy.apk
           adb shell am start -n io.envoyproxy.envoymobile.helloenvoy/.MainActivity
         name: 'Start java app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'
-      # upload
-      - uses: actions/upload-artifact@v2
-        with:
-          name: hello_envoy_apk
-          path: bazel-bin/examples/java/hello_world/hello_envoy.apk
+      # no need to upload for x86 only, see artifacts workflow.
   kotlinhelloworld:
     name: kotlin_helloworld
     needs: androidbuild
@@ -138,14 +135,10 @@ jobs:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/kotlin/hello_world:hello_envoy_kt
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.
       - run: |
-          bazelisk build --fat_apk_cpu=x86,armeabi-v7a,arm64-v8a //examples/kotlin/hello_world:hello_envoy_kt
+          bazelisk build --fat_apk_cpu=x86 //examples/kotlin/hello_world:hello_envoy_kt
           adb install -r --no-incremental bazel-bin/examples/kotlin/hello_world/hello_envoy_kt.apk
           adb shell am start -n io.envoyproxy.envoymobile.helloenvoykotlin/.MainActivity
         name: 'Start kotlin app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'
-     # upload
-      - uses: actions/upload-artifact@v2
-        with:
-          name: hello_envoy_kt_apk
-          path: bazel-bin/examples/java/hello_world/hello_envoy_kt.apk
+     # no need to upload for x86 only, see artifacts workflow.

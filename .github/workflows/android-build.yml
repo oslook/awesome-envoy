@@ -80,7 +80,9 @@ jobs:
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Short-circuit'
       - name: start simulator
-        run: ./ci/mac_start_emulator.sh
+        run: |
+          sed 's/1024/4096/'  ./ci/mac_start_emulator.sh
+          ./ci/mac_start_emulator.sh
       # Return to using:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/java/hello_world:hello_envoy
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.
@@ -129,7 +131,9 @@ jobs:
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Short-circuit'
       - name: start simulator
-        run: ./ci/mac_start_emulator.sh
+        run: |
+          sed 's/1024/4096/'  ./ci/mac_start_emulator.sh
+          ./ci/mac_start_emulator.sh
       # Return to using:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/kotlin/hello_world:hello_envoy_kt
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.

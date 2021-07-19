@@ -54,7 +54,7 @@ jobs:
         name: 'Start java app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'
-      # upload
+      # upload java apk
       - uses: actions/upload-artifact@v2
         with:
           name: hello_envoy_apk
@@ -66,11 +66,11 @@ jobs:
         name: 'Start kotlin app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'   
-       # upload
+       # upload kt apk
       - uses: actions/upload-artifact@v2
         with:
           name: hello_envoy_kt_apk
-          path: bazel-bin/examples/kotlin/hello_world/hello_envo_-kt.apk
+          path: bazel-bin/examples/kotlin/hello_world/hello_envoy_kt.apk
     
 
   main_ios_dist:

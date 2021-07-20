@@ -46,4 +46,4 @@ jobs:
         mv Cargo.lock bazel/cargo/Cargo.raze.lock
         git diff --exit-code
     - name: Build Result (wasm32-wasi)
-      run: tree ~/.cargo/bin
+      run: tree bazel-bin

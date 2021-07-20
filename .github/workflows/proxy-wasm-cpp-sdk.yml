@@ -8,7 +8,16 @@ on:
   workflow_dispatch:
 jobs:
   examples:
-    name: build
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [
+          "envoyproxy/envoy-dev:latest", 
+          # "envoyproxy/envoy:v1.18.2", 
+          # "istio/proxyv2:1.9.6", 
+          # "istio/proxyv2:1.10.3",
+          ]
+    name: build - (${{ matrix.image }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -22,17 +31,30 @@ jobs:
         key: bazel-cpp-${{ runner.os }}
 
     # - name: Install bazelisk
-    #   run: |
-    #     curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
-    #     mkdir -p "${GITHUB_WORKSPACE}/bin/"
-    #     mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
-    #     chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
     - name: Test
       run: |
         bazel version
         bazel build //...
-        tree bazel-bin
+        tree bazel-bin/example/http_wasm_example.wasm
+    - run: |
+        docker run --rm --entrypoint envoy ${{ matrix.image }} --version
+        echo "-----"
+        wget -O $GITHUB_WORKSPACE/envoycfg.yaml https://raw.githubusercontent.com/oslook/envoy-actions/main/configs/cpp-sdk-example.yaml
+        docker run -d --name envoy \
+        -v $GITHUB_WORKSPACE/envoycfg.yaml:/etc/envoy/envoy.yaml \
+        -v $GITHUB_WORKSPACE/example:/lib \
+        --entrypoint envoy \
+        -p 8080:8080  ${{ matrix.image }} -c /etc/envoy/envoy.yaml
+        docker ps
+        sleep 3 # need check envoy started.
+        docker logs envoy
+        STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" localhost:8080)
+        echo $STATUSCODE
+        curl -v localhost:8080
+        # if test $STATUSCODE -ne 200; then
+        #   echo $STATUSCODE
+        # fi
   examples-macos:
     name: build
     runs-on: macOS-latest
@@ -48,16 +70,7 @@ jobs:
         key: bazel-cpp-${{ runner.os }}
 
     # - name: Install bazelisk
-    #   run: |
-    #     echo "Installing bazelisk"
-    #     brew reinstall --force bazelisk
-    #     if ! brew link --overwrite bazelisk; then
-    #         echo "Failed to install and link bazelisk"
-    #         exit 1
-    #     fi
-
-    #     bazel version
-        
+            
     - name: Test
       run: |
         bazel version

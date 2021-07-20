@@ -2,11 +2,64 @@
 
 name: proxy-wasm-cpp-sdk
 on:
+  push:
+    branches:
+    - main
   workflow_dispatch:
 jobs:
   examples:
-    name: check
+    name: build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2.1.0
+      with:
+        repository: proxy-wasm/proxy-wasm-cpp-sdk
+    - name: Mount bazel cache
+      uses: actions/cache@v1
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel-cpp-${{ runner.os }}
+
+    # - name: Install bazelisk
+    #   run: |
+    #     curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
+    #     mkdir -p "${GITHUB_WORKSPACE}/bin/"
+    #     mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+    #     chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+
+    - name: Test
+      run: |
+        bazel version
+        bazel build //...
+        tree bazel-bin
+  examples-macos:
+    name: build
+    runs-on: macOS-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.1.0
+      with:
+        repository: proxy-wasm/proxy-wasm-cpp-sdk
+    - name: Mount bazel cache
+      uses: actions/cache@v1
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel-cpp-${{ runner.os }}
+
+    # - name: Install bazelisk
+    #   run: |
+    #     echo "Installing bazelisk"
+    #     brew reinstall --force bazelisk
+    #     if ! brew link --overwrite bazelisk; then
+    #         echo "Failed to install and link bazelisk"
+    #         exit 1
+    #     fi
+
+    #     bazel version
+        
+    - name: Test
+      run: |
+        bazel version
+        bazel build //...
+        tree bazel-bin

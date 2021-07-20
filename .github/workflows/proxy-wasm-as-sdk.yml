@@ -54,7 +54,7 @@ jobs:
         --entrypoint envoy \
         -p 8080:8080  ${{ matrix.image }} -c /etc/envoy/envoy.yaml
         docker ps
-        sleep 3
+        sleep 3 # need check envoy started.
         docker logs envoy
         STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" localhost:8080)
         echo $STATUSCODE

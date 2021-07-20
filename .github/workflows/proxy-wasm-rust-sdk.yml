@@ -1,11 +1,49 @@
 # https://github.com/proxy-wasm/proxy-wasm-rust-sdk
 name: proxy-wasm-rust-sdk
 on:
+  push:
+    branches:
+    - main
   workflow_dispatch:
 jobs:
   examples:
-    name: check
+    name: build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2.1.0
+      with:
+        repository: proxy-wasm/proxy-wasm-rust-sdk
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/bazel
+          ~/.cache/bazelisk
+          ~/.cargo/.crates.toml
+          ~/.cargo/.crates2.json
+          ~/.cargo/bin
+          ~/.cargo/registry
+        key: rust-${{ hashFiles('WORKSPACE', '.bazelrc', '.bazelversion', 'bazel/cargo/Cargo.raze.lock', 'bazel/dependencies.bzl', 'bazel/repositories.bzl') }}
+
+    - name: Build (wasm32-unknown-unknown)
+      run: bazelisk --noworkspace_rc build --platforms=@rules_rust//rust/platform:wasm //...
+
+    - name: Build (wasm32-wasi)
+      run: bazelisk --noworkspace_rc build --platforms=@rules_rust//rust/platform:wasi //...
+
+    - name: Format (buildifier)
+      run: |
+        GO111MODULE=on go get -u github.com/bazelbuild/buildtools/buildifier@3.4.0
+        export PATH=$PATH:$(go env GOPATH)/bin
+        buildifier -mode=check WORKSPACE
+        buildifier -mode=check BUILD
+        buildifier -mode=check examples/BUILD
+    - name: Format (cargo raze)
+      run: |
+        mv bazel/cargo/Cargo.raze.lock Cargo.lock
+        bazelisk --noworkspace_rc run @cargo_raze//:raze -- --manifest-path=$(pwd)/Cargo.toml
+        mv Cargo.lock bazel/cargo/Cargo.raze.lock
+        git diff --exit-code
+    - name: Build Result (wasm32-wasi)
+      run: tree ~/.cargo/bin

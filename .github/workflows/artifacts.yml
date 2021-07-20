@@ -13,7 +13,7 @@ jobs:
   main_android_dist_ci:
     name: main_android_dist_ci
     runs-on: macOS-latest
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v2

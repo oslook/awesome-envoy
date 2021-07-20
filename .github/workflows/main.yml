@@ -3,15 +3,12 @@
 # Building Envoy with Remote Execution
 # Building Envoy with Docker sandbox
 
-name: Build Envoy CI (Local)
+name: Envoy(Local Ubuntu)
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
+  # schedule:
+  #   - cron:  '0 2 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -26,29 +23,20 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-        
-       # http://man7.org/linux/man-pages/man1/date.1.html
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-        shell: bash
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/bazel
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/README.md') }}
-      
       - name: Checkout source repo
         uses: actions/checkout@v2
         with:
           repository: envoyproxy/envoy
-          path: src
+          path: .
+          
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}-${{ github.sha }}
       # Runs a set of commands using the runners shell
       - name: Setup
         run: |
@@ -59,10 +47,8 @@ jobs:
           # llvm clang (ubuntu-latest had llvm)
           # sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
           sudo find / -name llvm-config
-          cd src
           bazel/setup_clang.sh /usr/lib/llvm-11/
       - name: Build
         run: |
-          cd src
           bazel build //source/exe:envoy-static
           

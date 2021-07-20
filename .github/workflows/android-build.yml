@@ -1,27 +1,36 @@
-name: android_build
+# https://github.com/envoyproxy/envoy-mobile/blob/main/.github/workflows/android_build.yml
+ # ONLY TEST FOR EMULATOR WITH X86 CPU ARCH
+name: envoy-mobile-android-build
 
 on:
   # push:
   #   branches:
   #     - main
   # pull_request:
+  # schedule:
+  #   - cron:  '0 2 * * *'
   workflow_dispatch:
 
 jobs:
   androidbuild:
     name: android_build
     runs-on: macOS-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     steps:
       - name: Checkout source repo
         uses: actions/checkout@v2
         with:
           repository: envoyproxy/envoy-mobile
           submodules: true
+      - name: Get Repo Sha
+        id: get-sha
+        run: |
+          echo "::set-output name=sha::$(git rev-list --max-count=1 origin/main)"
+        shell: bash
       - uses: actions/cache@v2
         id: check-cache
         with:
-          key: aar-${{ github.sha }}
+          key: aar-${{ steps.get-sha.outputs.sha }}
           path: dist/envoy.aar
         name: 'Check cache'
       - run: echo "Found envoy.aar from previous run!"
@@ -45,9 +54,16 @@ jobs:
     runs-on: macOS-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout source repo
+        uses: actions/checkout@v2
         with:
+          repository: envoyproxy/envoy-mobile
           submodules: true
+      - name: Get Repo Sha
+        id: get-sha
+        run: |
+          echo "::set-output name=sha::$(git rev-list --max-count=1 origin/main)"
+        shell: bash
       - uses: actions/setup-java@v1
         with:
           java-version: '8'
@@ -58,14 +74,16 @@ jobs:
       - uses: actions/cache@v2
         id: check-cache
         with:
-          key: aar-${{ github.sha }}
+          key: aar-${{ steps.get-sha.outputs.sha }}
           path: dist/envoy.aar
         name: 'Download aar'
       - run: exit 1
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Short-circuit'
       - name: start simulator
-        run: ./ci/mac_start_emulator.sh
+        run: |
+          sed 's/1024/4096/'  ./ci/mac_start_emulator.sh
+          ./ci/mac_start_emulator.sh
       # Return to using:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/java/hello_world:hello_envoy
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.
@@ -76,15 +94,23 @@ jobs:
         name: 'Start java app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'
+      # no need to upload for x86 only, see artifacts workflow.
   kotlinhelloworld:
     name: kotlin_helloworld
     needs: androidbuild
     runs-on: macOS-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout source repo
+        uses: actions/checkout@v2
         with:
+          repository: envoyproxy/envoy-mobile
           submodules: true
+      - name: Get Repo Sha
+        id: get-sha
+        run: |
+          echo "::set-output name=sha::$(git rev-list --max-count=1 origin/main)"
+        shell: bash
       - uses: actions/setup-java@v1
         with:
           java-version: '8'
@@ -95,14 +121,16 @@ jobs:
       - uses: actions/cache@v2
         id: check-cache
         with:
-          key: aar-${{ github.sha }}
+          key: aar-${{ steps.get-sha.outputs.sha }}
           path: dist/envoy.aar
         name: 'Download aar'
       - run: exit 1
         if: steps.check-cache.outputs.cache-hit != 'true'
         name: 'Short-circuit'
       - name: start simulator
-        run: ./ci/mac_start_emulator.sh
+        run: |
+          sed 's/1024/4096/'  ./ci/mac_start_emulator.sh
+          ./ci/mac_start_emulator.sh
       # Return to using:
       #   bazelisk mobile-install --fat_apk_cpu=x86 --start_app //examples/kotlin/hello_world:hello_envoy_kt
       # When https://github.com/lyft/envoy-mobile/issues/853 is fixed.
@@ -113,3 +141,4 @@ jobs:
         name: 'Start kotlin app'
       - run: 'adb logcat -e "received headers with status 200" -m 1'
         name: 'Check connectivity'
+     # no need to upload for x86 only, see artifacts workflow.

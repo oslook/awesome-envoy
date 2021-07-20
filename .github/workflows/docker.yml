@@ -3,16 +3,12 @@
 # !Building Envoy with Remote Execution
 # !Building Envoy with Docker sandbox
 
-name: Build Envoy CI (CI Docker Image)
+name: Envoy(Ubuntu Docker Image)
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
-
+  # schedule:
+  #   - cron:  '0 2 * * *'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -26,33 +22,38 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
+      - name: Checkout source repo
+        uses: actions/checkout@v2
+        with:
+          repository: envoyproxy/envoy
+          path: .
+      - name: Get Repo Sha
+        id: get-sha
+        run: |
+          echo "::set-output name=sha::$(git rev-list --max-count=1 origin/main)"
+        shell: bash
+        
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo Hello, world!
-        
-       # http://man7.org/linux/man-pages/man1/date.1.html
-      - name: Get Date
-        id: get-date
-        run: |
-          echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-        shell: bash
+        run: echo Hello, world! github.sha=${{ steps.get-sha.outputs.sha }}
 
       - uses: actions/cache@v2
         with:
           path: |
             ~/.cache/bazel
-            /var/lib/docker/
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/README.md') }}
+            ~/build
+          key: ${{ runner.os }}-docker-${{ steps.get-sha.outputs.sha }}
       
-      - name: Checkout source repo
-        uses: actions/checkout@v2
-        with:
-          repository: envoyproxy/envoy
-          path: src
       # Runs a set of commands using the runners shell
       - name: Build
         run: |
-          cd src
+          ENVOY_DOCKER_BUILD_DIR=~/build
           ./ci/run_envoy_docker.sh './ci/do_ci.sh bazel.release.server_only'
+      - name: 'Tar artifacts'
+        run: |
+          ls -l ~/build/envoy/source/exe
+          tar -czvf envoy.tar.gz ~/build/envoy/source/exe/*
+      - uses: actions/upload-artifact@v2
+        with:
+          name: envoy_bin
+          path: ./envoy.tar.gz

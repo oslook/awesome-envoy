@@ -1,0 +1,12 @@
+# https://github.com/proxy-wasm/proxy-wasm-cpp-sdk
+
+name: proxy-wasm-cpp-sdk
+on:
+  workflow_dispatch:
+jobs:
+  examples:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.1.0

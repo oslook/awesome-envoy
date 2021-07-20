@@ -1,0 +1,68 @@
+# https://github.com/solo-io/proxy-runtime/blob/master/.github/workflows/pr.yml
+# for build and run examples
+
+name: proxy-wasm-as-sdk
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build-examples:
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [
+          "envoyproxy/envoy-dev:latest", 
+          "envoyproxy/envoy:v1.18.2", 
+          # need to fix https://github.com/oslook/envoy-actions/runs/3091855885?check_suite_focus=true
+          # [critical][backtrace] [bazel-out/k8-opt/bin/external/envoy/source/server/_virtual_includes/backtrace_lib/server/backtrace.h:104] Caught Segmentation fault, suspect faulting address 0x0
+          # "istio/proxyv2:1.9.6", 
+          "istio/proxyv2:1.10.3",]
+        example: [
+          "auth", 
+          "singleton", 
+          # need to resolved https://github.com/solo-io/proxy-runtime/tree/master/examples/addheader loss envoycfg.yaml.
+          # "addheader", 
+          # "remove-headers",
+          ]
+          
+    name: E2E Test (${{ matrix.image }}-${{ matrix.example }})
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2.1.0
+      with:
+        repository: oslook/proxy-runtime
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - run: npm install
+    - run: npm run asbuild
+    # make sure example filter builds:
+    - run: cd examples/${{ matrix.example }} && npm install && npm run asbuild
+    - run: |
+        docker run --rm --entrypoint envoy ${{ matrix.image }} --version
+        echo "-----"
+        docker run -d --name envoy \
+        -v $GITHUB_WORKSPACE/examples/${{ matrix.example }}/envoycfg.yaml:/etc/envoy/envoy.yaml \
+        -v $GITHUB_WORKSPACE/examples/${{ matrix.example }}/build:/build \
+        --entrypoint envoy \
+        -p 8080:8080  ${{ matrix.image }} -c /etc/envoy/envoy.yaml
+        docker ps
+        sleep 3
+        docker logs envoy
+        STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" localhost:8080)
+        echo $STATUSCODE
+        # if test $STATUSCODE -ne 200; then
+        #   echo $STATUSCODE
+        # fi
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.example }}_build_wasm
+        path: examples/${{ matrix.example }}/build/optimized.wasm
+

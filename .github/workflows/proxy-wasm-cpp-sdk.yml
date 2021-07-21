@@ -36,18 +36,18 @@ jobs:
       run: |
         bazel version
         bazel build //...
-        tree bazel-bin/example/http_wasm_example.wasm
+        ls -l bazel-bin/example/http_wasm_example.wasm
     - run: |
         docker run --rm --entrypoint envoy ${{ matrix.image }} --version
         echo "-----"
         wget -O $GITHUB_WORKSPACE/envoycfg.yaml https://raw.githubusercontent.com/oslook/envoy-actions/main/configs/cpp-sdk-example.yaml
         docker run -d --name envoy \
         -v $GITHUB_WORKSPACE/envoycfg.yaml:/etc/envoy/envoy.yaml \
-        -v $GITHUB_WORKSPACE/example:/lib \
+        -v $GITHUB_WORKSPACE/bazel-bin/example:/lib \
         --entrypoint envoy \
         -p 8080:8080  ${{ matrix.image }} -c /etc/envoy/envoy.yaml
         docker ps
-        sleep 3 # need check envoy started.
+        sleep 5 # need check envoy started.
         docker logs envoy
         STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" localhost:8080)
         echo $STATUSCODE
@@ -56,7 +56,7 @@ jobs:
         #   echo $STATUSCODE
         # fi
   examples-macos:
-    name: build
+    name: build-MacOS
     runs-on: macOS-latest
     steps:
     - name: Checkout repository
@@ -75,4 +75,4 @@ jobs:
       run: |
         bazel version
         bazel build //...
-        tree bazel-bin
+        ls -l bazel-bin/example/http_wasm_example.wasm

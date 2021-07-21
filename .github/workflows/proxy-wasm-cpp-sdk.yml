@@ -43,7 +43,7 @@ jobs:
         wget -O $GITHUB_WORKSPACE/envoycfg.yaml https://raw.githubusercontent.com/oslook/envoy-actions/main/configs/cpp-sdk-example.yaml
         docker run -d --name envoy \
         -v $GITHUB_WORKSPACE/envoycfg.yaml:/etc/envoy/envoy.yaml \
-        -v $GITHUB_WORKSPACE/bazel-bin/example:/lib \
+        -v $GITHUB_WORKSPACE/bazel-bin/example:/example \
         --entrypoint envoy \
         -p 8080:8080  ${{ matrix.image }} -c /etc/envoy/envoy.yaml
         docker ps

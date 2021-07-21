@@ -1,4 +1,4 @@
-# envoy-actions [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+# envoy-actions ![Lincense](https://img.shields.io/github/license/oslook/envoy-actions)
 
 ## Getting Started
 

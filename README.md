@@ -14,15 +14,15 @@
 ### :dart: Envoy
 
 - build in docker ( Windows，Ubuntu )
-[![Envoy(Ubuntu Docker Image)](https://github.com/oslook/envoy-actions/actions/workflows/docker.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/docker.yml)
+[![Envoy(Ubuntu Docker Image)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-in-docker.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-in-docker.yml)
 
 
 - build with bazel (MacOS, Windows, Ubuntu)
-[![Envoy(Local Ubuntu)](https://github.com/oslook/envoy-actions/actions/workflows/main.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/main.yml)
+[![Envoy(Local Ubuntu)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-ubuntu.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-ubuntu.yml)
 
 
 - build in sandbox
-[![Envoy(Ubuntu Docker sandbox)](https://github.com/oslook/envoy-actions/actions/workflows/sandbox.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/sandbox.yml)
+[![Envoy(Ubuntu Docker sandbox)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-in-sandbox.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/envoy-in-sandbox.yml)
 
   - supported：ubuntu  
   - :whale: build on docker image like `envoyproxy/envoy-build-ubuntu`  
@@ -43,17 +43,17 @@ The output of Envoy Mobile for each launguage(Android，iOS):
 
 Github Action Workflows
 - Android 
-[![envoy-mobile-android-build](https://github.com/oslook/envoy-actions/actions/workflows/android-build.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/android-build.yml)
+[![envoy-mobile-android-build](https://github.com/oslook/envoy-actions/actions/workflows/mobile-android-build.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/mobile-android-build.yml)
 
   - CPU Arch supported: `x86, armeabi-v7a, arm64-v8a`  (Official only `x86`)  
 
 - iOS 
-[![envoy-mobile-ios-build](https://github.com/oslook/envoy-actions/actions/workflows/ios-build.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/ios-build.yml)
+[![envoy-mobile-ios-build](https://github.com/oslook/envoy-actions/actions/workflows/mobile-ios-build.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/mobile-ios-build.yml)
   - CPU Arch supported:	i386,x86_64,armv7,arm64  
 
 
 - Artifacts
-[![envoy-mobile-artifacts](https://github.com/oslook/envoy-actions/actions/workflows/artifacts.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/artifacts.yml)
+[![envoy-mobile-artifacts](https://github.com/oslook/envoy-actions/actions/workflows/mobile-artifacts.yml/badge.svg)](https://github.com/oslook/envoy-actions/actions/workflows/mobile-artifacts.yml)
   - The workflow not use the github cache, fully build and upload the sdk and examples.
 
 ### :dart:	envoy-mobile-app

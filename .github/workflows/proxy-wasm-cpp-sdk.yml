@@ -2,9 +2,9 @@
 
 name: proxy-wasm-cpp-sdk
 on:
-  push:
-    branches:
-    - main
+  # push:
+  #   branches:
+  #   - main
   workflow_dispatch:
 jobs:
   examples:

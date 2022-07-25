@@ -15,7 +15,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.5'
+          go-version: '1.18.1'
 
       - name: Install Make
         run: apt install make
@@ -47,7 +47,8 @@ jobs:
       matrix:
         image: [
           "envoyproxy/envoy-dev:latest", 
-          "envoyproxy/envoy:v1.18.2", 
+          "envoyproxy/envoy:v1.22-latest",
+          "envoyproxy/envoy:v1.23-latest",
           "istio/proxyv2:1.9.6", 
           "istio/proxyv2:1.10.3",]
     name: E2E Test (${{ matrix.image }})
@@ -60,7 +61,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.5'
+          go-version: '1.18.1'
 
       - name: Print Envoy version
         run: envoy --version

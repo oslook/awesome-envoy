@@ -44,9 +44,11 @@ jobs:
         buildifier -mode=check examples/BUILD
     - name: Format (cargo raze)
       run: |
-        mv bazel/cargo/Cargo.raze.lock Cargo.lock
+        cargo install cargo-raze --version 0.15.0
+        cargo raze --generate-lockfile
+        # mv bazel/cargo/Cargo.raze.lock Cargo.lock
         bazelisk --noworkspace_rc run @cargo_raze//:raze -- --manifest-path=$(pwd)/Cargo.toml
-        mv Cargo.lock bazel/cargo/Cargo.raze.lock
+        # mv Cargo.lock bazel/cargo/Cargo.raze.lock
         git diff --exit-code
     - name: Build Result (wasm32-wasi)
       run: tree bazel-bin
